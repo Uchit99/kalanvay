@@ -1,0 +1,289 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────
+// USERS
+// ─────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  phone        String?
+  role         UserRole @default(CUSTOMER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cartItems  CartItem[]
+  wishlist   Wishlist[]
+  orders     Order[]
+  commissions Commission[]
+  reviews    Review[]
+
+  @@index([email])
+  @@index([role])
+}
+
+// ─────────────────────────────────────────────
+// ARTWORKS
+// ─────────────────────────────────────────────
+
+model Artwork {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  medium      String
+  size        String?
+  description String      @db.Text
+  price       Decimal     @db.Decimal(12, 2)
+  type        ArtworkType @default(ORIGINAL)
+  category    String?
+  stock       Int         @default(1)
+
+  isPublished Boolean @default(true)
+  isFeatured  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  images     ArtworkImage[]
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  wishlist   Wishlist[]
+  reviews    Review[]
+
+  @@index([category])
+  @@index([isPublished])
+  @@index([isFeatured])
+}
+
+// ─────────────────────────────────────────────
+// ARTWORK IMAGES
+// ─────────────────────────────────────────────
+
+model ArtworkImage {
+  id        String   @id @default(cuid())
+  artworkId String
+  url       String
+  alt       String?
+  position  Int      @default(0)
+
+  artwork Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
+
+  @@index([artworkId])
+}
+
+// ─────────────────────────────────────────────
+// CART
+// ─────────────────────────────────────────────
+
+model CartItem {
+  id        String @id @default(cuid())
+  userId    String
+  artworkId String
+  quantity  Int    @default(1)
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artwork Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, artworkId])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// WISHLIST
+// ─────────────────────────────────────────────
+
+model Wishlist {
+  id        String @id @default(cuid())
+  userId    String
+  artworkId String
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artwork Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, artworkId])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// ORDERS
+// ─────────────────────────────────────────────
+
+model Order {
+  id          String      @id @default(cuid())
+  orderNumber String      @unique
+
+  userId String?
+  user   User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  status        OrderStatus   @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+
+  razorpayOrderId   String? @unique
+  razorpayPaymentId String? @unique
+
+  subtotal Decimal @db.Decimal(12, 2)
+  shipping Decimal @db.Decimal(12, 2)
+  total    Decimal @db.Decimal(12, 2)
+
+  email     String
+  phone     String?
+  firstName String
+  lastName  String?
+
+  address    String
+  city       String
+  postalCode String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────
+// ORDER ITEMS
+// ─────────────────────────────────────────────
+
+model OrderItem {
+  id       String @id @default(cuid())
+  orderId  String
+  artworkId String?
+
+  title    String
+  medium   String?
+  price    Decimal @db.Decimal(12, 2)
+  quantity Int
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  artwork Artwork? @relation(fields: [artworkId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([artworkId])
+}
+
+// ─────────────────────────────────────────────
+// COMMISSIONS
+// ─────────────────────────────────────────────
+
+model Commission {
+  id     String @id @default(cuid())
+  userId String?
+
+  name        String
+  email       String
+  phone       String?
+  artworkType String?
+  budget      String?
+  description String  @db.Text
+
+  status CommissionStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  images CommissionImage[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────
+// COMMISSION IMAGES
+// ─────────────────────────────────────────────
+
+model CommissionImage {
+  id           String @id @default(cuid())
+  commissionId String
+  url          String
+
+  commission Commission @relation(fields: [commissionId], references: [id], onDelete: Cascade)
+
+  @@index([commissionId])
+}
+
+// ─────────────────────────────────────────────
+// REVIEWS
+// ─────────────────────────────────────────────
+
+model Review {
+  id        String @id @default(cuid())
+  userId    String
+  artworkId String
+
+  rating  Int
+  comment String? @db.Text
+
+  isApproved Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artwork Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, artworkId])
+  @@index([artworkId])
+  @@index([isApproved])
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+enum ArtworkType {
+  ORIGINAL
+  LIMITED_EDITION
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum CommissionStatus {
+  PENDING
+  REVIEWING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+}

@@ -1,0 +1,12 @@
+<svg width="360" height="120" viewBox="0 0 360 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="360" height="120" rx="4" fill="#25302E"/>
+  <g stroke="#D6B774" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M174 16C158 42 151 67 155 91" stroke-width="2.8"/>
+    <path d="M155 50L128 78M157 60L187 40M153 69L125 94M159 42L177 23" stroke-width="1.7"/>
+    <path d="M178 17C201 29 202 51 184 57C171 60 162 52 165 42C168 31 181 28 190 36" stroke-width="2"/>
+    <path d="M178 25C189 30 190 43 182 47C175 51 170 45 172 40C174 34 180 34 184 38" stroke-width="1.4"/>
+    <path d="M132 37V89M119 62H160M151 64C164 71 174 79 184 89" stroke-width="2.8"/>
+  </g>
+  <path d="M177 35C188 37 190 47 183 50C176 53 172 48 174 43C175 39 179 38 183 41" fill="#4E9A95"/>
+  <text x="180" y="103" text-anchor="middle" fill="#E0C181" font-family="Georgia,serif" font-size="20" letter-spacing="7">KALANVAY</text>
+</svg>
