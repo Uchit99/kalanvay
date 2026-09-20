@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/$/, "");
 
 const AuthContext = createContext(null);
 
@@ -89,6 +89,27 @@ export function AuthProvider({ children }) {
     return data;
   }
 
+  async function loginAdmin({ email, password }) {
+    const response = await fetch(`${API_URL}/auth/admin/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Admin sign-in failed.");
+    }
+
+    setUser(data.user);
+
+    return data;
+  }
+
   async function logout() {
     try {
       await fetch(`${API_URL}/auth/logout`, {
@@ -107,6 +128,7 @@ export function AuthProvider({ children }) {
         loading,
         register,
         login,
+        loginAdmin,
         logout,
         refreshUser: fetchCurrentUser,
       }}

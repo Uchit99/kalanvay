@@ -197,6 +197,52 @@ router.post("/login", authLimiter, async (req, res, next) => {
   }
 });
 
+// ADMIN LOGIN — accepts only accounts explicitly assigned the ADMIN role.
+router.post("/admin/login", authLimiter, async (req, res, next) => {
+  try {
+    const result = loginSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid email and password.",
+      });
+    }
+
+    const email = normalizeEmail(result.data.email);
+    const { password } = result.data;
+    const user = await prisma.user.findUnique({ where: { email } });
+    const passwordMatches = user
+      ? await bcrypt.compare(password, user.passwordHash)
+      : false;
+
+    if (!user || !passwordMatches || user.role !== "ADMIN") {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid administrator email or password.",
+      });
+    }
+
+    const token = createToken(user);
+    setAuthCookie(res, token);
+
+    return res.json({
+      success: true,
+      message: "Admin sign-in successful.",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // LOGOUT
 router.post("/logout", (req, res) => {
   clearAuthCookie(res);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
-  BrowserRouter,
+  HashRouter,
   Navigate,
   Link,
   NavLink,
@@ -38,6 +38,7 @@ import "./gallery.css";
 import "./hero.css";
 import { addWishlistItem, createCommission, formatArtwork, getArtwork, getArtworks, getFeaturedArtworks, getWishlist, removeWishlistItem } from "./lib/api";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import AdminRoute from "./components/AdminRoute";
 import image0005 from "../images/product image/IMG-20260918-WA0005.jpg.jpeg";
 import image0006 from "../images/product image/IMG-20260918-WA0006.jpg.jpeg";
 import image0007 from "../images/product image/IMG-20260918-WA0007.jpg.jpeg";
@@ -1570,7 +1571,7 @@ function Admin() {
 function AuthPage({ admin = false, initialMode = "register" }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, register: createAccount } = useAuth();
+  const { login, loginAdmin, register: createAccount } = useAuth();
   const [register, setRegister] = useState(initialMode === "register");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -1583,8 +1584,13 @@ function AuthPage({ admin = false, initialMode = "register" }) {
     if (register && values.get("password") !== values.get("confirmPassword")) { setError("Passwords do not match."); return; }
     setStatus("loading"); setError("");
     try {
-      if (register && !admin) await createAccount({ name: values.get("name"), email: values.get("email"), password: values.get("password") });
-      else await login({ email: values.get("email"), password: values.get("password") });
+      if (register && !admin) {
+        await createAccount({ name: values.get("name"), email: values.get("email"), password: values.get("password") });
+      } else if (admin) {
+        await loginAdmin({ email: values.get("email"), password: values.get("password") });
+      } else {
+        await login({ email: values.get("email"), password: values.get("password") });
+      }
       navigate(admin ? "/admin/dashboard" : (location.state?.from || "/account"));
     } catch (authError) { setError(authError.message || "We could not complete that request."); setStatus("error"); }
   };
@@ -2415,17 +2421,24 @@ function App() {
 
             <Route
               path="/admin"
+              element={<Navigate to="/admin/login" replace />}
+            />
+
+            <Route
+              path="/admin/login"
               element={
                 <AuthPage admin />
               }
             />
 
             <Route
-              path="/admin/dashboard"
-              element={
-                <AdminStudio />
-              }
-            />
+              element={<AdminRoute />}
+            >
+              <Route
+                path="/admin/dashboard"
+                element={<AdminStudio />}
+              />
+            </Route>
 
             <Route
               path="*"
@@ -2454,9 +2467,9 @@ if (!rootElement) {
 }
 
 createRoot(rootElement).render(
-  <BrowserRouter>
+  <HashRouter>
     <AuthProvider>
       <App />
     </AuthProvider>
-  </BrowserRouter>
+  </HashRouter>
 );
