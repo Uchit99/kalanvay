@@ -5,7 +5,19 @@
 .wordmark span{grid-column:1}
 @media(max-width:900px){.hero-art,.hero-copy{grid-column:1;grid-row:auto}}
 
-/* Header alignment and compact navigation */
-.header{display:grid;grid-template-columns:minmax(210px,1fr) auto minmax(210px,1fr);gap:28px}
-.header .wordmark{justify-self:start}.header nav{margin:0;justify-self:center}.header-actions{margin:0;justify-self:end;gap:18px}.brand-logo{width:44px;height:44px;object-fit:cover;object-position:center;border:1px solid rgba(198,161,91,.7);border-radius:50%;background:#07110f;box-shadow:0 0 0 3px rgba(198,161,91,.1)}.wordmark{grid-template-columns:52px auto;grid-template-rows:auto auto;column-gap:8px}.wordmark .brand-logo{grid-row:1 / 3}.wordmark span{grid-column:2}
-@media(max-width:1100px){.header{display:flex;justify-content:space-between;gap:0}.header nav,.header-actions>a{display:none!important}.header-actions{margin-left:auto}.mobile-menu{display:grid!important}.wordmark{min-height:44px}}
+/* Header alignment and Kalanvay brand lockup */
+.header{display:grid;grid-template-columns:minmax(255px,1fr) auto minmax(255px,1fr);gap:42px;height:94px;padding:0 clamp(24px,4vw,76px);background:rgba(4,18,16,.9);border-bottom:1px solid rgba(214,183,116,.28)}
+.header.scrolled{height:78px;background:rgba(4,18,16,.97);border-color:rgba(214,183,116,.38);box-shadow:0 12px 34px rgba(0,0,0,.2)}
+.header .wordmark{justify-self:start}.header nav{margin:0;justify-self:center;gap:32px}.header-actions{margin:0;justify-self:end;gap:15px}
+.wordmark{display:grid;grid-template-columns:58px auto;grid-template-rows:auto auto;column-gap:11px;align-items:center;min-width:0;color:#f6ebd9;letter-spacing:.14em}
+.wordmark .brand-logo{grid-row:1 / 3;width:58px;height:58px;object-fit:cover;object-position:center;border:1px solid rgba(225,190,112,.9);border-radius:50%;background:#061d1a;box-shadow:0 0 0 3px rgba(214,183,116,.12);filter:brightness(1.13) contrast(1.06);transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
+.brand-name{font:600 24px/1 var(--serif);letter-spacing:.15em;color:#f6ebd9}.wordmark span{grid-column:2;margin-top:5px;color:#d6b774;font:500 7px/1.2 var(--mono);letter-spacing:.34em;white-space:nowrap}.wordmark:hover .brand-logo{transform:scale(1.05);box-shadow:0 0 0 5px rgba(214,183,116,.14)}
+.header nav a,.header-actions a,.header-actions button{color:rgba(247,237,218,.82);font-size:10px;letter-spacing:.14em;text-transform:uppercase}.header nav a:hover,.header-actions a:hover,.header-actions button:hover{color:#e6c57e}.header nav a:after{height:1px;background:#d6b774}.header-account{border-left:1px solid rgba(214,183,116,.3);padding-left:16px}.bag i,.wishlist-link i{background:#d6b774;color:#07110f}
+@media(max-width:1100px){.header{display:flex;justify-content:space-between;gap:0}.header nav,.header-actions>a{display:none!important}.header-actions{margin-left:auto}.mobile-menu{display:grid!important}.wordmark{min-height:48px}}
+@media(max-width:600px){.header{height:76px;padding-inline:5vw}.header.scrolled{height:70px}.wordmark{grid-template-columns:46px auto;column-gap:9px}.wordmark .brand-logo{width:46px;height:46px}.brand-name{font-size:19px}.wordmark span{font-size:5.5px;letter-spacing:.27em}}
+
+/* Password visibility controls */
+.auth-panel .password-field{position:relative;display:flex;align-items:center;border:1px solid var(--line);border-radius:2px;background:rgba(7,17,15,.45)}
+.auth-panel .password-field input{width:100%;border:0;background:transparent;padding-right:76px}
+.auth-panel .password-toggle{position:absolute;right:4px;display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:0 9px;border:0;border-radius:2px;background:transparent;color:var(--gold-soft);font:600 10px var(--sans);letter-spacing:.06em;cursor:pointer}
+.auth-panel .password-toggle:hover,.auth-panel .password-toggle:focus-visible{background:rgba(198,161,91,.14);color:var(--gold);outline:1px solid var(--gold)}

@@ -26,6 +26,8 @@ import {
   Check,
   AtSign,
   ChevronDown,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 import "./styles.css";
@@ -56,6 +58,7 @@ import image0029 from "../images/product image/IMG-20260918-WA0029.jpg.jpeg";
 import image0059 from "../images/product image/IMG-20260918-WA0059.jpg.jpeg";
 import image0060 from "../images/product image/IMG-20260918-WA0060.jpg.jpeg";
 import image0061 from "../images/product image/IMG-20260918-WA0061.jpg.jpeg";
+import kalanvayLogo from "../images/logo/WhatsApp Image 2026-09-19 at 12.50.52 AM.jpeg";
 
 /* =========================================================
    FALLBACK ARTWORK DATA
@@ -210,7 +213,7 @@ function Header({ cart, wishlistCount = 0 }) {
     <>
       <header className={`header ${scrolled ? "scrolled" : ""}`}>
         <Link className="wordmark" to="/">
-          <img className="brand-logo" src="/kalanvay-mark.svg" alt="Kalanvay" />
+          <img className="brand-logo" src={kalanvayLogo} alt="Kalanvay" />
           <strong className="brand-name">KALANVAY</strong>
           <span>CONTEMPORARY ART STUDIO</span>
         </Link>
@@ -1569,7 +1572,8 @@ function AuthPage({ admin = false, initialMode = "register" }) {
   const location = useLocation();
   const { login, register: createAccount } = useAuth();
   const [register, setRegister] = useState(initialMode === "register");
-  const [show, setShow] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
 
@@ -1646,20 +1650,48 @@ function AuthPage({ admin = false, initialMode = "register" }) {
               <input
                 required
                 name="password"
-                type={show ? "text" : "password"}
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
               />
 
               <button
                 type="button"
-                onClick={() => setShow(!show)}
+                className="password-toggle"
+                onClick={() => setShowPassword((visible) => !visible)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+                title={showPassword ? "Hide password" : "Show password"}
               >
-                {show ? "Hide" : "Show"}
+                {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                <span>{showPassword ? "Hide" : "Show"}</span>
               </button>
             </div>
           </label>
 
-          {register && !admin && <label>Confirm password<input required name="confirmPassword" type={show ? "text" : "password"} placeholder="••••••••" /></label>}
+          {register && !admin && (
+            <label>
+              Confirm password
+              <div className="password-field">
+                <input
+                  required
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowConfirmPassword((visible) => !visible)}
+                  aria-label={showConfirmPassword ? "Hide confirmation password" : "Show confirmation password"}
+                  aria-pressed={showConfirmPassword}
+                  title={showConfirmPassword ? "Hide password" : "Show password"}
+                >
+                  {showConfirmPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                  <span>{showConfirmPassword ? "Hide" : "Show"}</span>
+                </button>
+              </div>
+            </label>
+          )}
 
           {!admin && !register && (
             <a className="forgot">
